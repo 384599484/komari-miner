@@ -1,0 +1,113 @@
+package metricstore
+
+import (
+	"context"
+	"fmt"
+	"sort"
+	"time"
+
+	"github.com/komari-monitor/komari/database/models"
+	"github.com/komari-monitor/komari/pkg/metric"
+)
+
+// WritePingRecord 将 ping 记录写入 metric store
+func WritePingRecord(ctx context.Context, rec models.PingRecord) error {
+	s := GetStore()
+	if s == nil {
+		return fmt.Errorf("metric store not enabled")
+	}
+
+	reportBatcherMu.Lock()
+	worker := reportBatcher
+	reportBatcherMu.Unlock()
+	if worker != nil {
+		return worker.enqueuePing(ctx, rec)
+	}
+	return writePingRecords(ctx, []models.PingRecord{rec})
+}
+
+func writePingRecords(ctx context.Context, records []models.PingRecord) error {
+	s := GetStore()
+	if s == nil {
+		return fmt.Errorf("metric store not enabled")
+	}
+	if len(records) == 0 {
+		return nil
+	}
+
+	points := make([]metric.Point, 0, len(records)*2)
+	for _, rec := range records {
+		tags := map[string]string{"task_id": fmt.Sprintf("%d", rec.TaskId)}
+		loss := 0.0
+		if rec.Value < 0 {
+			loss = 1
+		}
+		points = append(points,
+			metric.Point{
+				MetricName: MetricPingLatency,
+				EntityID:   rec.Client,
+				Timestamp:  rec.Time,
+				Value:      float64(rec.Value),
+				Tags:       tags,
+			},
+			metric.Point{
+				MetricName: MetricPingLoss,
+				EntityID:   rec.Client,
+				Timestamp:  rec.Time,
+				Value:      loss,
+				Tags:       tags,
+			},
+		)
+	}
+	return s.WriteBatch(ctx, points)
+}
+
+// GetPingRecords returns legacy-shaped ping records, newest first.
+func GetPingRecords(ctx context.Context, clientUUID string, taskID int, start, end time.Time) ([]models.PingRecord, error) {
+	s := GetStore()
+	if s == nil {
+		return nil, fmt.Errorf("metric store not enabled")
+	}
+
+	query := MetricsQuery{
+		Store: s, Mode: QuerySeries, Source: SourceRollup,
+		CompactDefinitions: true,
+		Entities:           EntityScope{All: clientUUID == ""},
+		Specs:              []MetricSpec{{Name: MetricPingLatency, Aggregations: []metric.Aggregation{metric.AggLast}}},
+		Start:              start, End: end, Order: metric.OrderAsc, Grouping: GroupSeries,
+		Budget: PointBudget{PerSeries: 4000}, Rounding: RoundFloor, AllowMissing: true,
+	}
+	if clientUUID != "" {
+		query.Entities.IDs = []string{clientUUID}
+	}
+	if taskID >= 0 {
+		query.Tags = map[string]string{"task_id": fmt.Sprintf("%d", taskID)}
+	}
+	loaded, err := QueryMetrics(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	points := loaded.Values[MetricPingLatency][metric.AggLast]
+	records := make([]models.PingRecord, 0, len(points))
+	for _, p := range points {
+		taskIDVal := uint(0)
+		if tid, ok := p.Tags["task_id"]; ok {
+			var t uint64
+			fmt.Sscanf(tid, "%d", &t)
+			taskIDVal = uint(t)
+		}
+
+		records = append(records, models.PingRecord{
+			Client: p.EntityID,
+			TaskId: taskIDVal,
+			Time:   p.Bucket.UTC(),
+			Value:  int(p.Value),
+		})
+	}
+	sort.Slice(records, func(i, j int) bool {
+		return records[i].Time.After(records[j].Time)
+	})
+
+	return records, nil
+}

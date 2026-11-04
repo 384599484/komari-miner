@@ -1,0 +1,4 @@
+# The embedded frontend archive is binary.
+server/web/public/defaultTheme/dist.tar.zst binary
+*.png binary
+*.webp binary

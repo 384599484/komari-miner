@@ -1,0 +1,189 @@
+import "@xterm/xterm/css/xterm.css";
+import { Theme } from "@radix-ui/themes";
+import TerminalNotices from "./TerminalNotices";
+import TerminalResourceMonitor from "./TerminalResourceMonitor";
+import TerminalTabBar from "./TerminalTabBar";
+import TerminalWorkspace from "./TerminalWorkspace";
+import { useTerminalPage } from "./useTerminalPage";
+import { DEFAULT_TERMINAL_FONT_FAMILY } from "./terminalDefaults";
+import { lazy, Suspense, useState } from "react";
+import TerminalGuide from "@/components/onboarding/TerminalGuide";
+
+const FileEditorDialog = lazy(() => import("./FileEditorDialog"));
+
+const TerminalPage = () => {
+  const {
+    onboardingAuthenticated,
+    t,
+    appearance,
+    clients,
+    clientsLoading,
+    tabs,
+    activeTabId,
+    editingTabId,
+    renameDraft,
+    serverMenuOpen,
+    isSidebarOpen,
+    leftWidth,
+    httpsCalloutOpen,
+    twoFaEnabled,
+    searchOpen,
+    searchTerm,
+    searchResultIndex,
+    searchResultCount,
+    searchCaseSensitive,
+    searchUseRegex,
+    resourceMonitorServers,
+    containerRef,
+    sessionsReady,
+    setActiveTabId,
+    setServerMenuOpen,
+    setRenameDraft,
+    setIsSidebarOpen,
+    setHttpsCalloutOpen,
+    handleSearchTermChange,
+    handleFindNext,
+    handleFindPrevious,
+    handleToggleCaseSensitive,
+    handleToggleUseRegex,
+    toggleResourceMonitor,
+    openSearch,
+    openFileManager,
+    closeSearch,
+    handleApiChange,
+    startDragging,
+    openClient,
+    startRename,
+    commitRename,
+    cancelRename,
+    duplicateTab,
+    exportText,
+    colorTab,
+    closeTab,
+    reorderTab,
+  } = useTerminalPage();
+
+  const [editorUuid, setEditorUuid] = useState<string | null>(null);
+  const [workbenchMenuOpen, setWorkbenchMenuOpen] = useState(false);
+
+  return (
+      <Theme
+        appearance="dark"
+        className="km-page-terminal fixed inset-0 h-screen w-screen overflow-hidden bg-[#1e1e1e]"
+      >
+        <TerminalNotices
+          httpsCalloutOpen={httpsCalloutOpen}
+          onDismissHttpsCallout={() => setHttpsCalloutOpen(false)}
+        />
+
+        <div
+          className="km-terminal-shell flex h-screen w-screen min-w-0 flex-col bg-[#1e1e1e] text-[#cccccc]"
+          style={appearance}
+        >
+          <TerminalTabBar
+            tabs={tabs}
+            clients={clients}
+            clientsLoading={clientsLoading}
+            activeTabId={activeTabId}
+            editingTabId={editingTabId}
+            renameDraft={renameDraft}
+            serverMenuOpen={serverMenuOpen}
+            onServerMenuOpenChange={(open) => {
+              setServerMenuOpen(open);
+              if (open) setWorkbenchMenuOpen(false);
+            }}
+            workbenchMenuOpen={workbenchMenuOpen}
+            onWorkbenchMenuOpenChange={(open) => {
+              setWorkbenchMenuOpen(open);
+              if (open) setServerMenuOpen(false);
+            }}
+            onActivate={setActiveTabId}
+            onOpenTerminalClient={openClient}
+            onOpenWorkbenchClient={(client) => {
+              setEditorUuid(client.uuid);
+              setWorkbenchMenuOpen(false);
+            }}
+            onStartRename={startRename}
+            onDraftChange={setRenameDraft}
+            onCommitRename={commitRename}
+            onCancelRename={cancelRename}
+            onDuplicate={duplicateTab}
+            onExportText={exportText}
+            onFind={openSearch}
+            onOpenFileManager={openFileManager}
+            onOpenEditor={(tabId) => {
+              const uuid = tabs.find((tab) => tab.id === tabId)?.uuid;
+              if (uuid) setEditorUuid(uuid);
+            }}
+            resourceMonitorServers={resourceMonitorServers}
+            onToggleResourceWindow={toggleResourceMonitor}
+            onColor={colorTab}
+            onClose={closeTab}
+            onReorder={reorderTab}
+          />
+
+          <TerminalWorkspace
+            containerRef={containerRef}
+            isSidebarOpen={isSidebarOpen}
+            leftWidth={leftWidth}
+            tabs={tabs}
+            clientsLoading={clientsLoading}
+            activeTabId={activeTabId}
+            sessionsReady={sessionsReady}
+            twoFaEnabled={twoFaEnabled}
+            disconnectMessage={t("terminal.disconnect")}
+            searchOpen={searchOpen}
+            searchTerm={searchTerm}
+            searchResultIndex={searchResultIndex}
+            searchResultCount={searchResultCount}
+            searchCaseSensitive={searchCaseSensitive}
+            searchUseRegex={searchUseRegex}
+            onSearchTermChange={handleSearchTermChange}
+            onFindNext={handleFindNext}
+            onFindPrevious={handleFindPrevious}
+            onToggleCaseSensitive={handleToggleCaseSensitive}
+            onToggleUseRegex={handleToggleUseRegex}
+            onCloseSearch={closeSearch}
+            onApiChange={handleApiChange}
+            onToggleSidebar={() => setIsSidebarOpen((open) => !open)}
+            onStartDragging={startDragging}
+            onOpenTerminalMenu={() => {
+              setWorkbenchMenuOpen(false);
+              setServerMenuOpen(true);
+            }}
+            onOpenWorkbenchMenu={() => {
+              setServerMenuOpen(false);
+              setWorkbenchMenuOpen(true);
+            }}
+          />
+        </div>
+
+        <TerminalResourceMonitor
+          clients={clients}
+          servers={resourceMonitorServers}
+          onRemove={toggleResourceMonitor}
+        />
+        <TerminalGuide
+          authenticated={onboardingAuthenticated}
+          hasTabs={!clientsLoading && tabs.length > 0}
+          blocked={Boolean(editorUuid) || serverMenuOpen || workbenchMenuOpen || Boolean(editingTabId)}
+        />
+
+        {editorUuid && (
+          <Suspense fallback={null}>
+            <FileEditorDialog
+              open
+              uuid={editorUuid}
+              initialFile={null}
+              fontFamily={DEFAULT_TERMINAL_FONT_FAMILY}
+              onOpenChange={(open) => {
+                if (!open) setEditorUuid(null);
+              }}
+            />
+          </Suspense>
+        )}
+      </Theme>
+  );
+};
+
+export default TerminalPage;

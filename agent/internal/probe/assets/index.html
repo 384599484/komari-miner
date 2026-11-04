@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>Komari Miner Probe · 矿机监控</title>
+  <link rel="stylesheet" href="/static/app.css" />
+</head>
+<body>
+  <div class="ambient"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">⛏</div>
+      <div class="brand-text">
+        <div class="title">KOMARI <span>MINER PROBE</span></div>
+        <div class="subtitle">
+          <span id="rig-name">加载中…</span>
+          <span class="sep">/</span>
+          <span id="hostname">--</span>
+          <span class="sep">/</span>
+          <span id="os-name">--</span>
+        </div>
+      </div>
+    </div>
+    <div class="top-right">
+      <span id="demo-badge" class="demo-badge hidden">DEMO</span>
+      <div class="live"><span id="link-dot" class="dot pending"></span><span id="link-text">连接中</span></div>
+      <div class="updated"><span id="last-update">等待第一帧数据…</span><span id="probe-uptime" class="probe-uptime"></span></div>
+    </div>
+  </header>
+
+  <main>
+    <div id="alerts" class="alerts"></div>
+
+    <section id="summary" class="summary-grid" aria-label="概要指标"></section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <h2><span class="icon">▤</span> GPU 状态</h2>
+          <span id="gpu-hint" class="hint">利用率 · 显存 · 温度 · 功耗</span>
+        </div>
+        <span id="gpu-count" class="count-badge">0 GPUs</span>
+      </div>
+      <div id="gpu-grid" class="gpu-grid"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <h2><span class="icon">⚒</span> 挖矿进程</h2>
+          <span id="miner-hint" class="hint">自动识别常见 miner · 算力来自本地 API</span>
+        </div>
+        <span id="miner-count" class="count-badge">0 miners</span>
+      </div>
+      <div class="table-wrap">
+        <table class="miner-table">
+          <thead>
+            <tr>
+              <th>进程</th>
+              <th>算力 / 算法</th>
+              <th>矿池 / 钱包</th>
+              <th>GPU</th>
+              <th>份额</th>
+              <th>运行时间</th>
+              <th>CPU / 内存</th>
+            </tr>
+          </thead>
+          <tbody id="miner-body"></tbody>
+        </table>
+        <div id="miner-empty" class="empty hidden">
+          <div class="empty-icon">⚒</div>
+          <div>未检测到挖矿进程</div>
+          <p>支持 xmrig / t-rex / lolMiner / NBMiner / GMiner / SRBMiner 等常见 miner</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel chart-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <h2><span class="icon">↗</span> 算力趋势</h2>
+          <span class="hint">探针本地保留最近 15 分钟采样</span>
+        </div>
+        <span id="chart-total" class="chart-total">0 H/s</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="hashrate-chart"></canvas>
+      </div>
+    </section>
+
+    <section class="panel system-panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <h2><span class="icon">⛭</span> 矿机概况</h2>
+          <span id="collect-hint" class="hint">--</span>
+        </div>
+      </div>
+      <div id="system-grid" class="system-grid"></div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Komari Miner Probe <b id="version">v0.1.0</b></span>
+    <span class="dot-small"></span>
+    <span>GPU telemetry via nvidia-smi / rocm-smi · miner telemetry via process scan</span>
+    <span class="footer-spacer"></span>
+    <span id="footer-hint">自动刷新 2s</span>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

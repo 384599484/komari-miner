@@ -1,0 +1,165 @@
+{
+  "menu": [
+    {
+      "labelKey": "common.dashboard",
+      "path": "/admin/dashboard",
+      "icon": "LayoutDashboard"
+    },
+    {
+      "labelKey": "common.serverList",
+      "path": "/admin/servers",
+      "icon": "Server"
+    },
+    {
+      "labelKey": "operations.workbench",
+      "path": "/terminal",
+      "icon": "SquareTerminal",
+      "newTab": true
+    },
+    {
+      "labelKey": "adminNavigation.operations",
+      "path": "/admin/ping",
+      "icon": "Bolt",
+      "children": [
+        {
+          "labelKey": "ping.title",
+          "path": "/admin/ping",
+          "icon": "Activity"
+        },
+        {
+          "labelKey": "exec.title",
+          "path": "/admin/exec",
+          "icon": "Code"
+        },
+        {
+          "labelKey": "logs.title",
+          "path": "/admin/logs",
+          "icon": "FileText"
+        },
+        {
+          "labelKey": "pprof.title",
+          "path": "/admin/pprof",
+          "icon": "BarChart2"
+        }
+      ]
+    },
+    {
+      "labelKey": "notification.title",
+      "path": "/admin/notification/channels",
+      "icon": "Bell",
+      "children": [
+        {
+          "labelKey": "notification.channels.title",
+          "path": "/admin/notification/channels",
+          "icon": "MessageCircleMore"
+        },
+        {
+          "labelKey": "adminNavigation.events",
+          "path": "/admin/notification/general",
+          "icon": "Ellipsis"
+        },
+        {
+          "labelKey": "notification.offline.title",
+          "path": "/admin/notification/offline",
+          "icon": "Unplug"
+        }
+      ]
+    },
+    {
+      "labelKey": "adminNavigation.extensions",
+      "path": "/admin/themes",
+      "icon": "MonitorCog",
+      "children": [
+        {
+          "labelKey": "theme.title",
+          "path": "/admin/themes",
+          "icon": "Paintbrush"
+        },
+        {
+          "labelKey": "market.themes",
+          "path": "/admin/market/themes",
+          "icon": "ShoppingBag"
+        },
+        {
+          "labelKey": "plugin.manage",
+          "path": "/admin/plugins",
+          "icon": "Package"
+        },
+        {
+          "labelKey": "plugin.market",
+          "path": "/admin/market/plugins",
+          "icon": "Store"
+        },
+        {
+          "labelKey": "adminNavigation.pluginSettings",
+          "path": "/admin/plugins/config",
+          "icon": "SlidersHorizontal"
+        }
+      ]
+    },
+    {
+      "labelKey": "adminNavigation.system",
+      "path": "/admin/settings/site",
+      "icon": "Settings2",
+      "children": [
+        {
+          "labelKey": "adminNavigation.site",
+          "path": "/admin/settings/site",
+          "icon": "Home"
+        },
+        {
+          "labelKey": "adminNavigation.general",
+          "path": "/admin/settings/general",
+          "icon": "Ellipsis"
+        },
+        {
+          "labelKey": "settings.metrics.title",
+          "path": "/admin/settings/metrics",
+          "icon": "Database"
+        }
+      ]
+    },
+    {
+      "labelKey": "adminNavigation.security",
+      "path": "/admin/account",
+      "icon": "UserCircle",
+      "children": [
+        {
+          "labelKey": "adminNavigation.profile",
+          "path": "/admin/account",
+          "icon": "UserCircle"
+        },
+        {
+          "labelKey": "adminNavigation.login",
+          "path": "/admin/settings/sign-on",
+          "icon": "CircleArrowRight"
+        },
+        {
+          "labelKey": "adminNavigation.sessions",
+          "path": "/admin/sessions",
+          "icon": "Users"
+        }
+      ]
+    },
+    {
+      "labelKey": "common.about",
+      "path": "/admin/about",
+      "icon": "AtSign",
+      "bottom": true
+    },
+    {
+      "labelKey": "common.documentation",
+      "path": "https://komari-document.pages.dev/",
+      "icon": "Book",
+      "newTab": true,
+      "bottom": true
+    },
+    {
+      "labelKey": "common.home",
+      "path": "/",
+      "icon": "Home",
+      "newTab": true,
+      "bottom": true
+    }
+  ]
+}

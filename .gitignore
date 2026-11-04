@@ -1,0 +1,29 @@
+# Build outputs
+/server/komari-server
+/server/komari-server.exe
+/agent/komari-miner-probe
+/agent/komari-miner-probe.exe
+/agent/probe-linux-*
+*.test
+
+# Frontend
+/web-src/node_modules/
+/web-src/dist/
+/web-src/bundle-analysis.html
+
+# Runtime data
+/server/data/
+*.db
+*.db-shm
+*.db-wal
+/metrics.db*
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# The embedded theme archive is intentionally committed so that `go build`
+# in server/ produces a fully working binary without a Node toolchain.
+!/server/web/public/defaultTheme/dist.tar.zst
