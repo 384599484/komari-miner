@@ -1,2 +1,7 @@
 dist/*
 defaultTheme/*
+# We ship the packed theme so `go build` in server/ yields a working binary
+# without a Node toolchain. Regenerate it with scripts/build.sh after any
+# frontend change.
+!defaultTheme/*.tar.zst
+!defaultTheme/komari-theme.json
