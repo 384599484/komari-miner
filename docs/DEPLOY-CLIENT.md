@@ -1,7 +1,7 @@
 # 客户端（矿机）部署指南
 
 本文说明如何在一台矿机上安装 `komari-miner-probe`，并把 GPU 与挖矿进程状态上报到
-`https://prl.yjf123.top`。
+`monitor.example.com`。
 
 - 探针是一个**单文件静态二进制**，无运行时依赖（不需要 Go、Python、Node、Docker）。
 - 只用 Go 标准库，唯一的外部命令是 `nvidia-smi`（NVIDIA 驱动自带）或 `rocm-smi`（AMD）。
@@ -11,13 +11,13 @@
 
 ## 1. 在服务端创建节点，拿到 token
 
-打开 <https://prl.yjf123.top>，登录管理后台 →「添加节点」，填一个名字（如 `RIG-01`）。
+打开 <https://monitor.example.com>，登录管理后台 →「添加节点」，填一个名字（如 `RIG-01`）。
 
 创建后该客户端会有一对标识：
 
 | 字段 | 示例 | 用途 |
 | --- | --- | --- |
-| `uuid` | `e0545d5d-0980-44f7-b2d2-ae39286786ce` | 节点唯一 ID，仅用于展示/API |
+| `uuid` | `e0545d5d-0980-44f7-b2d2-ae39286436ce` | 节点唯一 ID，仅用于展示/API |
 | `token` | `xAhJeZps0JLmgV5kDVVHxI` | **探针上报凭据，用这个** |
 
 > ⚠️ 探针的 `--token` 必须填 **token**，不是 uuid。填 uuid 会返回 `401 Unauthorized.`。
